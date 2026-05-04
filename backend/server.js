@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const verifyToken = require('./authMiddleware');
 const db = require('./db');
 require('dotenv').config();
+const cors = require('cors');
+app.use(cors()); // This allows the frontend to talk to the backend
 
 const app = express();
 app.use(express.json()); // Middleware to parse JSON bodies
