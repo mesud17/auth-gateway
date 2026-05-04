@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const verifyToken = require('./authMiddleware');
 const db = require('./db');
 require('dotenv').config();
 
@@ -13,7 +14,7 @@ app.post('/register', async (req, res) => {
 
     try {
         // 1. Check if user already exists
-        const [existingUser] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+        const existingUser = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
         if (existingUser.length > 0) {
             return res.status(400).json({ message: "User already exists" });
         }
@@ -70,6 +71,25 @@ app.post('/login', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error during login" });
+    }
+});
+
+// --- PROTECTED ROUTE ---
+// Notice how verifyToken is placed before the (req, res) function
+app.get('/profile', verifyToken, async (req, res) => {
+    try {
+        // Since verifyToken added req.user, we have the ID!
+        const [users] = await db.execute(
+            'SELECT id, email, created_at FROM users WHERE id = ?', 
+            [req.user.userId]
+        );
+        
+        res.json({
+            message: "Welcome to your protected profile!",
+            user: users[0]
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching profile" });
     }
 });
 
