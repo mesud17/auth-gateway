@@ -9,7 +9,7 @@ app.use(express.json()); // Middleware to parse JSON bodies
 
 // --- REGISTRATION ROUTE ---
 app.post('/register', async (req, res) => {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
     try {
         // 1. Check if user already exists
@@ -24,14 +24,52 @@ app.post('/register', async (req, res) => {
 
         // 3. Insert into database
         await db.execute(
-            'INSERT INTO users (email, password) VALUES (?, ?)',
-            [email, hashedPassword]
+            'INSERT INTO users (username,email,password) VALUES (?,?,?)',
+            [username,email, hashedPassword]
         );
 
         res.status(201).json({ message: "User registered successfully!" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error during registration" });
+    }
+});
+
+// --- LOGIN ROUTE ---
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // 1. Find user by email
+        const [users] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+        const user = users[0];
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid Credentials" });
+        }
+
+        // 2. Compare entered password with hashed password in DB
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid Credentials" });
+        }
+
+        // 3. Create a JWT Token
+        // We put the user's ID in the "payload"
+        const token = jwt.sign(
+            { userId: user.id }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '1h' } // Token expires in 1 hour
+        );
+
+        res.json({ 
+            message: "Login successful!", 
+            token: token 
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error during login" });
     }
 });
 
