@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../../service/api";
-import "./Register.css"
+import "./Register.css";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -26,8 +26,13 @@ export default function Register() {
 
     try {
       const result = await registerUser(form);
+      localStorage.setItem("token", result.token);
+
       setMessage(result.message || "Registered successfully");
-      setTimeout(() => navigate("/login"), 1000);
+
+      setTimeout(() => {
+        navigate("/profile");
+      }, 1000);
     } catch (err) {
       setError(err.message);
     } finally {
