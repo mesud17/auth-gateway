@@ -38,6 +38,7 @@ A professional full-stack authentication system designed with a focus on **secur
     │   ├── Login.js      # Auth Logic
     │   └── Profile.js    # Protected Component
 
+```
 
 ⚙️ Setup & Installation
 
