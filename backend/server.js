@@ -5,9 +5,8 @@ const verifyToken = require('./authMiddleware');
 const db = require('./db');
 require('dotenv').config();
 const cors = require('cors');
-app.use(cors()); // This allows the frontend to talk to the backend
-
 const app = express();
+app.use(cors());
 app.use(express.json()); // Middleware to parse JSON bodies
 
 // --- REGISTRATION ROUTE ---
@@ -16,7 +15,8 @@ app.post('/register', async (req, res) => {
 
     try {
         // 1. Check if user already exists
-        const existingUser = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+        const [existingUser] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+        // console.log(existingUser);
         if (existingUser.length > 0) {
             return res.status(400).json({ message: "User already exists" });
         }
