@@ -27,9 +27,7 @@ export default function Register() {
     try {
       const result = await registerUser(form);
       localStorage.setItem("token", result.token);
-
       setMessage(result.message || "Registered successfully");
-
       setTimeout(() => {
         navigate("/profile");
       }, 1000);
@@ -55,7 +53,6 @@ export default function Register() {
             onChange={handleChange}
             required
           />
-
           <input
             type="email"
             name="email"
@@ -64,7 +61,6 @@ export default function Register() {
             onChange={handleChange}
             required
           />
-
           <input
             type="password"
             name="password"
@@ -73,15 +69,12 @@ export default function Register() {
             onChange={handleChange}
             required
           />
-
           <button type="submit" disabled={loading} className="auth-btn">
             {loading ? "Creating..." : "Register"}
           </button>
         </form>
-
         {message && <p className="success-text">{message}</p>}
         {error && <p className="error-text">{error}</p>}
-
         <p className="switch-text">
           Already have an account? <Link to="/login">Login</Link>
         </p>

@@ -10,9 +10,6 @@ export default function Navbar() {
   };
   return (
     <nav className="topbar">
-      <Link to="/" className="brand">
-        SecureAuth
-      </Link>
       <div className="topbar-links">
         {!token ? (
           <>
