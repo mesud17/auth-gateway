@@ -2,8 +2,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const verifyToken = (req, res, next) => {
-    // 1. Get the token from the request header
-    // Standard practice is "Authorization: Bearer <token>"
+    // Get the token from the request header
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
