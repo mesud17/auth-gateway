@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../service/api";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
-
+const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -71,14 +72,29 @@ function Login() {
             required
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+        <div className="password-wrapper">
+  <input
+    type={showPassword ? "text" : "password"}
+    name="password"
+    placeholder="Enter your password"
+    value={formData.password}
+    onChange={handleChange}
+    required
+  />
+
+  <span
+    className="eye-icon"
+    onClick={() =>
+      setShowPassword(!showPassword)
+    }
+  >
+    {showPassword ? (
+      <FaEyeSlash />
+    ) : (
+      <FaEye />
+    )}
+  </span>
+</div>
 
           <button type="submit">Login</button>
         </form>

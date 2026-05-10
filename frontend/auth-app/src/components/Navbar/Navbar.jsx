@@ -1,37 +1,64 @@
-import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 
-export default function Navbar() {
+import "./Navbar.css";
+
+function Navbar() {
   const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
+
+  const role = localStorage.getItem("role");
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+
+    localStorage.removeItem("role");
+
     navigate("/login");
   };
+
   return (
-    <nav className="topbar">
-      <div className="topbar-links">
+    <nav className="navbar">
+      <h2 className="logo">SecureAuth</h2>
+
+      <ul className="nav-links">
         {!token ? (
           <>
-            <Link to="/login" className="nav-link">
-              Login
-            </Link>
-            <Link to="/register" className="nav-link nav-link-primary">
-              Register
-            </Link>
-            <li></li>
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
+
+            <li>
+              <Link to="/register">Register</Link>
+            </li>
           </>
         ) : (
           <>
-            <Link to="/profile" className="nav-link">
-              Profile
-            </Link>
-            <button className="logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+
+            {role === "admin" && (
+              <li>
+                <Link to="/admin">
+                  Admin Dashboard
+                </Link>
+              </li>
+            )}
+
+            <li>
+              <button
+                className="logout-btn"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </li>
           </>
         )}
-      </div>
+      </ul>
     </nav>
   );
 }
+
+export default Navbar;

@@ -1,4 +1,4 @@
-.topbar {
+.navbar {
   width: 100%;
 
   display: flex;
@@ -12,27 +12,32 @@
   backdrop-filter: blur(10px);
 
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  position: sticky;
+  top: 0;
+
+  z-index: 1000;
 }
 
-.brand {
+.logo {
   font-size: 1.6rem;
   font-weight: bold;
 
   color: white;
 
-  text-decoration: none;
-
   letter-spacing: 1px;
 }
 
-.topbar-links {
+.nav-links {
   display: flex;
   align-items: center;
 
   gap: 15px;
+
+  list-style: none;
 }
 
-.nav-link {
+.nav-links li a {
   padding: 10px 18px;
 
   border-radius: 12px;
@@ -44,30 +49,21 @@
   text-decoration: none;
 
   transition: 0.3s;
+
+  font-weight: 500;
 }
 
-.nav-link:hover {
+.nav-links li a:hover {
   background-color: rgba(255, 255, 255, 0.15);
 
   transform: translateY(-2px);
-}
-
-.nav-link-primary {
-  background-color: #22c55e;
-
-  color: white;
-
-  font-weight: bold;
-}
-
-.nav-link-primary:hover {
-  background-color: #16a34a;
 }
 
 .logout-btn {
   padding: 10px 18px;
 
   border: none;
+
   border-radius: 12px;
 
   background-color: #ef4444;
