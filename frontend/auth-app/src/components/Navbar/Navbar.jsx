@@ -19,6 +19,7 @@ export default function Navbar() {
             <Link to="/register" className="nav-link nav-link-primary">
               Register
             </Link>
+            <li></li>
           </>
         ) : (
           <>

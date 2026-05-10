@@ -13,7 +13,6 @@ app.use(express.json());
 app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    // 1. Check if user already exists
     const [existingUser] = await db.execute(
       "SELECT * FROM users WHERE email = ?",
       [email],
@@ -23,30 +22,27 @@ app.post("/register", async (req, res) => {
         message: "User already exists",
       });
     }
-    // 2. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // 3. Insert user into database
     const [result] = await db.execute(
       "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
       [username, email, hashedPassword],
     );
 
-    // 4. Create token immediately after registration
     const token = jwt.sign(
-      { userId: result.insertId },
+      {
+        userId: result.insertId,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" },
+      {
+        expiresIn: "1h",
+      },
     );
-
-    // 5. Send response
     res.status(201).json({
       message: "User registered successfully!",
       token,
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       message: "Server error during registration",
     });
@@ -56,67 +52,147 @@ app.post("/register", async (req, res) => {
 // ================= LOGIN =================
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
   try {
-    // 1. Find user by email
     const [users] = await db.execute("SELECT * FROM users WHERE email = ?", [
       email,
     ]);
-
     const user = users[0];
-
-    // 2. Check if user exists
     if (!user) {
       return res.status(400).json({
         message: "Invalid Credentials",
       });
     }
-
-    // 3. Compare passwords
+    // BLOCKED USER CHECK
+    if (user.status === "blocked") {
+      return res.status(403).json({
+        message: "Your account has been blocked",
+      });
+    }
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
       return res.status(400).json({
         message: "Invalid Credentials",
       });
     }
-
-    // 4. Create token
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    // 5. Send token
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      },
+    );
     res.json({
       message: "Login successful!",
       token,
+      role: user.role,
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       message: "Server error during login",
     });
   }
 });
 
-// ================= PROTECTED PROFILE =================
+// ================= PROFILE =================
 app.get("/profile", verifyToken, async (req, res) => {
   try {
     const [users] = await db.execute(
-      "SELECT id, username, email, created_at FROM users WHERE id = ?",
+      "SELECT id, username, email, role, status, created_at FROM users WHERE id = ?",
       [req.user.userId],
     );
-
     res.json({
       message: "Welcome to your protected profile!",
       user: users[0],
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       message: "Error fetching profile",
+    });
+  }
+});
+// ================= ADMIN : GET ALL USERS =================
+app.get("/admin/users", verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied",
+      });
+    }
+    const [users] = await db.execute(
+      "SELECT id, username, email, role, status, created_at FROM users ORDER BY id DESC",
+    );
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error fetching users",
+    });
+  }
+});
+// ================= ADMIN : BLOCK USER =================
+app.put("/admin/block/:id", verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied",
+      });
+    }
+    const userId = req.params.id;
+    await db.execute("UPDATE users SET status = 'blocked' WHERE id = ?", [
+      userId,
+    ]);
+    res.json({ message: "User blocked successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error blocking user",
+    });
+  }
+});
+// ================= ADMIN : UNBLOCK USER =================
+app.put("/admin/unblock/:id", verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied",
+      });
+    }
+    const userId = req.params.id;
+    await db.execute("UPDATE users SET status = 'active' WHERE id = ?", [
+      userId,
+    ]);
+    res.json({
+      message: "User unblocked successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error unblocking user",
+    });
+  }
+});
+// ================= ADMIN : DELETE USER =================
+app.delete("/admin/delete/:id", verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied",
+      });
+    }
+    const userId = req.params.id;
+    await db.execute("DELETE FROM users WHERE id = ?", [userId]);
+    res.json({
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error deleting user",
     });
   }
 });

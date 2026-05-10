@@ -32,8 +32,8 @@ function Profile() {
               <p>{user.email}</p>
             </div>
             <div className="profile-box">
-              <span className="profile-label">Created At</span>
-              <p>{user.created_at}</p>
+              <span className="profile-label">Role</span>
+              <p>{user.role}</p>
             </div>
           </>
         ) : (
