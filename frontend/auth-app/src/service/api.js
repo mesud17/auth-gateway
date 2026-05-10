@@ -11,7 +11,7 @@ export const registerUser = async (data) => {
   });
 
   const result = await response.json();
-   if (!response.ok) {
+  if (!response.ok) {
     throw new Error(result.message || "Registration failed");
   }
 
@@ -48,6 +48,27 @@ export const fetchProfile = async (token) => {
   if (!response.ok) {
     throw new Error(result.message || "Failed to load profile");
   }
+  return result;
+};
+
+// ================= UPDATE PROFILE =================
+export const updateProfile = async (formData, token) => {
+  const response = await fetch(`${API_URL}/update-profile`, {
+    method: "PUT",
+
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: formData,
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message);
+  }
+
   return result;
 };
 // ================= GET USERS =================

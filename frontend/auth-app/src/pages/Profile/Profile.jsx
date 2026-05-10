@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchProfile } from "../../service/api";
+import { fetchProfile, updateProfile } from "../../service/api";
+
 import { Link } from "react-router-dom";
 
 import "./Profile.css";
@@ -7,87 +8,130 @@ import "./Profile.css";
 function Profile() {
   const [user, setUser] = useState(null);
 
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    profile_image: null,
+  });
+
+  const token = localStorage.getItem("token");
+
+  const getProfile = async () => {
+    try {
+      const result = await fetchProfile(token);
+
+      setUser(result.user);
+
+      setFormData({
+        username: result.user.username,
+        email: result.user.email,
+        password: "",
+        profile_image: null,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const result = await fetchProfile(token);
-
-        setUser(result.user);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     getProfile();
   }, []);
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+
+    if (name === "profile_image") {
+      setFormData({
+        ...formData,
+        profile_image: files[0],
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const data = new FormData();
+
+      data.append("username", formData.username);
+      data.append("email", formData.email);
+      data.append("password", formData.password);
+
+      if (formData.profile_image) {
+        data.append("profile_image", formData.profile_image);
+      }
+      await updateProfile(data, token);
+
+      alert("Profile updated successfully");
+
+      getProfile();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   if (!user) {
     return <h2 className="loading">Loading...</h2>;
   }
-
   return (
     <div className="profile-container">
       <div className="profile-card">
         <div className="profile-header">
-          <div className="profile-avatar">
-            {user.username.charAt(0).toUpperCase()}
-          </div>
+          {user.profile_image ? (
+            <img
+              src={`http://localhost:5000/uploads/${user.profile_image}`}
+              alt="Profile"
+              className="profile-image"
+            />
+          ) : (
+            <div className="profile-avatar">
+              {user.username.charAt(0).toUpperCase()}
+            </div>
+          )}
 
-          <h1 className="profile-title">
-            Welcome, {user.username}
-          </h1>
+          <h1 className="profile-title">{user.username}</h1>
 
-          <p className="profile-subtitle">
-            Your account information
-          </p>
+          <p className="profile-subtitle">{user.email}</p>
         </div>
 
-        <div className="profile-info">
-          <div className="info-box">
-            <span>Username</span>
-            <h3>{user.username}</h3>
-          </div>
+        <form className="profile-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="Username"
+          />
 
-          <div className="info-box">
-            <span>Email</span>
-            <h3>{user.email}</h3>
-          </div>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Email"
+          />
 
-          <div className="info-box">
-            <span>Role</span>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="New Password"
+          />
 
-            <h3
-              className={
-                user.role === "admin"
-                  ? "admin-role"
-                  : "user-role"
-              }
-            >
-              {user.role}
-            </h3>
-          </div>
+          <input type="file" name="profile_image" onChange={handleChange} />
 
-          <div className="info-box">
-            <span>Status</span>
-
-            <h3
-              className={
-                user.status === "blocked"
-                  ? "blocked-status"
-                  : "active-status"
-              }
-            >
-              {user.status}
-            </h3>
-          </div>
-        </div>
-
+          <button type="submit">Update Profile</button>
+        </form>
         {user.role === "admin" && (
           <div className="admin-btn-wrapper">
             <Link to="/admin" className="admin-dashboard-btn">
-              Go to Admin Dashboard
+              Go To Admin Dashboard
             </Link>
           </div>
         )}
@@ -95,5 +139,4 @@ function Profile() {
     </div>
   );
 }
-
 export default Profile;
