@@ -9,7 +9,7 @@ const db = require("./db");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+app.use(cors()); //middleware to enable CORS for all routes
 app.use(express.json());
 
 // Serve static files from the uploads folder
@@ -24,7 +24,6 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
-
 const upload = multer({ storage });
 
 // ================= REGISTER =================
@@ -43,6 +42,7 @@ app.post("/register", async (req, res) => {
       "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
       [username, email, hashedPassword],
     );
+    //create a JWT token with the user's ID as the payload, using a secret key from environment variables and setting an expiration time of 1 hour
 
     const token = jwt.sign(
       { userId: result.insertId },
@@ -122,10 +122,7 @@ app.get("/profile", verifyToken, async (req, res) => {
 });
 
 // ================= PROFILE UPDATE =================
-app.put(
-  "/update-profile",
-  verifyToken,
-  upload.single("profile_image"), // Use the middleware here
+app.put("/update-profile",verifyToken,upload.single("profile_image"), // Use the middleware here
   async (req, res) => {
     try {
       const { username, email, password } = req.body;

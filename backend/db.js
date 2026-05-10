@@ -1,6 +1,7 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
+//create a connection pool to the MySQL database using environment variables for configuration
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
