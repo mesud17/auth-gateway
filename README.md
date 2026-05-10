@@ -1,63 +1,119 @@
 # Secure Auth Gateway 🔐
 
-A professional full-stack authentication system designed with a focus on **security**, **scalability**, and **DevOps best practices**. This project implements a secure bridge between a React frontend and a Node.js/MySQL backend.
+A modern full-stack authentication and user management system built with a strong focus on:
 
-## 🚀 Features
+- Security
+- Scalability
+- User Experience
+- Professional UI/UX
+- Real-world Backend Architecture
 
-*   **Secure Registration:** Validates user input and hashes passwords using `bcrypt`.
-*   **JWT Authentication:** Uses JSON Web Tokens for stateless, secure user sessions.
-*   **Protected Routes:** Custom middleware ensures only authorized users can access sensitive endpoints.
-*   **Persistent Login:** Tokens are managed via `localStorage` with Axios Interceptors for seamless API calls.
-*   **Environment Safety:** All sensitive credentials (DB passwords, JWT secrets) are managed via `.env` files.
+This project provides a secure bridge between a React frontend and a Node.js + MySQL backend using JWT authentication and role-based authorization.
 
-## 🛠️ Tech Stack
+---
 
-### Backend
-*   **Node.js & Express:** Server-side logic and RESTful API.
-*   **MySQL:** Relational database for persistent user storage.
-*   **Bcrypt:** Industry-standard password hashing.
-*   **JWT (JsonWebToken):** Identity verification and authorization.
+# 🚀 Features
 
-### Frontend
-*   **React:** Functional components and Hooks (`useState`, `useEffect`).
-*   **React Router:** Single Page Application (SPA) navigation.
-*   **Axios:** Centralized API communication with request interceptors.
+## 🔑 Authentication System
 
-## 📂 Project Structure
+- Secure User Registration
+- Login Authentication
+- JWT-Based Authorization
+- Protected Routes
+- Persistent User Sessions
+- Password Hashing with Bcrypt
+- Password Visibility Toggle
+
+---
+
+## 👤 User Profile System
+
+- Professional Profile Dashboard
+- Edit Profile Functionality
+- Upload Profile Pictures
+- Change Username
+- Change Email
+- Change Password
+- Live Profile Image Preview
+
+---
+
+## 🛡️ Admin Dashboard
+
+- View All Users
+- Block / Unblock Users
+- Delete Users
+- Role-Based Access Control
+- Admin Protected Routes
+
+---
+
+## 🎨 Professional UI
+
+- Modern Glassmorphism Design
+- Responsive Layout
+- Dynamic Navbar
+- Conditional Navigation
+- Loading States
+- Interactive Hover Effects
+
+---
+
+# 🛠️ Tech Stack
+
+## Frontend
+
+- React
+- React Router DOM
+- React Hooks
+- React Icons
+- CSS3
+
+---
+
+## Backend
+
+- Node.js
+- Express.js
+- MySQL
+- JWT Authentication
+- Bcrypt
+- Multer
+- CORS
+- dotenv
+
+---
+
+# 📂 Project Structure
 
 ```text
+Secure-Auth-Gateway/
+│
 ├── backend/
-│   ├── db.js             # MySQL Connection Pool
-│   ├── server.js         # Express Routes & Entry Point
-│   ├── authMiddleware.js # JWT Verification Logic
-│   └── .env              # Configuration (Not committed to Git)
-└── frontend/
-    ├── src/
-    │   ├── api.js        # Axios Interceptor Config
-    │   ├── App.js        # Routing & Main Layout
-    │   ├── Login.js      # Auth Logic
-    │   └── Profile.js    # Protected Component
-
-```
-
-⚙️ Setup & Installation
-
-1. Clone the repository
-git clone https://github.com/mesud17/auth-gateway.git
-
-2. **Backend Setup**
-   * Navigate to `/backend`.
-   * Run `npm install`.
-   * Create a `.env` file and add your MySQL and JWT secret credentials.
-   * Run `node server.js` or `npm run dev`.
-
-3. **Frontend Setup**
-   * Navigate to `/frontend`.
-   * Run `npm install`.
-   * Run `npm start`.
-
-## 🛡️ Security Implementation
-This project follows the **Fail-Fast** DevOps principle:
-1. The server pings the MySQL database on startup; if the connection fails, the process exits with an error.
-2. Cross-Origin Resource Sharing (**CORS**) is configured to only allow trusted origins.
-3. Passwords are never stored in plain text, utilizing a salt factor of 10.
+│   ├── uploads/
+│   ├── authMiddleware.js
+│   ├── db.js
+│   ├── server.js
+│   ├── package.json
+│   └── .env
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── Navbar/
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── Login/
+│   │   │   ├── Register/
+│   │   │   ├── Profile/
+│   │   │   └── AdminDashboard/
+│   │   │
+│   │   ├── service/
+│   │   │   └── api.js
+│   │   │
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   │
+│   └── package.json
+│
+└── README.md
