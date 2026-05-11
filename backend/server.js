@@ -30,8 +30,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ================= RATE LIMITING =================
 // Limit login attempts to prevent brute-force attacks
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 10,
+  validate: { xForwardedForHeader: false }, // fixes Render proxy issue
   message: { message: "Too many login attempts. Please try again later." },
 });
 
