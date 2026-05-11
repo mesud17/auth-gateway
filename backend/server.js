@@ -132,19 +132,15 @@ app.put("/update-profile",verifyToken,upload.single("profile_image"), // Use the
       if (req.file) {
         imagePath = req.file.filename;
       }
-
       const [users] = await db.execute("SELECT * FROM users WHERE id = ?", [
         userId,
       ]);
       const currentUser = users[0];
-
       let updatedPassword = currentUser.password;
       if (password && password.trim() !== "") {
         updatedPassword = await bcrypt.hash(password, 10);
       }
-
       const finalImage = imagePath || currentUser.profile_image;
-
       await db.execute(
         `UPDATE users SET username = ?, email = ?, password = ?, profile_image = ? WHERE id = ?`,
         [username, email, updatedPassword, finalImage, userId],
@@ -172,6 +168,7 @@ app.get("/admin/users", verifyToken, async (req, res) => {
   }
 });
 
+// Admin routes for blocking, unblocking, and deleting users. Each route checks if the user has an admin role before performing the action. If the user is not an admin, a 403 Forbidden response is returned. If the action is successful, a success message is returned. If there's an error during the database operation, a 500 Internal Server Error response is returned with an error message.
 app.put("/admin/block/:id", verifyToken, async (req, res) => {
   try {
     if (req.user.role !== "admin")

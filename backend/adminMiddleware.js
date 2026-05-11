@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-
 const adminOnly = (req, res, next) => {
 
    if (req.user.role !== "admin") {
